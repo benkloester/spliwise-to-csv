@@ -7,7 +7,7 @@ var express = require('express'),
   consumerKey = "XH19fg88X4s6zYXDA0EZGLBW9TxCvlb2auqrMDrw",
   consumerSecret = "CDSVYWIRYJ24gWWBbdQAMpyf0Yo6dfEKVD247V0C",
   fieldsToConvert = [
-    'Description', 'AmountPaid', 'OwedByMe', 'OwedToMe', 'Date', 'Deleted', 'Category', 
+    'Description', 'AmountPaid', 'OwedByMe', 'OwedToMe', 'Date', 'Category', 
     'Group', 'Currency'
   ],
   thisUser = {},
@@ -82,7 +82,7 @@ app.get('/sessions/callback', function(req, res){
               expenses = jsonData.expenses;
 
           expenses.forEach(function(expense){
-              if (typeof expense.deleted_at === 'undefined') {
+              if (expense.deleted_at != null) {
                   return;
               }
               var users = expense.users,
@@ -114,7 +114,6 @@ app.get('/sessions/callback', function(req, res){
               thisExpense.OwedToMe = OwedToMe;
               thisExpense.Category = expense.category.name;
               thisExpense.Date = expense.date;
-              thisExpense.Deleted = expense.deleted_at;
               readyJson.push(thisExpense);
           });
 
