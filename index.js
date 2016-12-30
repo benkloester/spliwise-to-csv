@@ -100,7 +100,7 @@ app.get('/sessions/callback', function(req, res){
                         } else {
                             // res.send(data);
                             u = JSON.parse(data).user;
-                            usersIdMap[u.id] = u.first_name + u.last_name;
+                            usersIdMap[user.user.id] = u.first_name + u.last_name;
                         }  
                     }); 
                  }
