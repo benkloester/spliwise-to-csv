@@ -93,7 +93,8 @@ app.get('/sessions/callback', function(req, res){
               OwedToMe;
               users.forEach(function(user){
                  if (!(user.user.id in usersIdMap)){
-                    usersIdMap[user.user.id] = user.user.first_name + " " + user.user.last_name;
+                    usersIdMap[user.user.id] = user.user.first_name;
+		    if(user.user.last_name != null){ usersIdMap[user.user.id] += " " + user.user.last_name; }
                  }
                 
                  if (thisUser.id === user.user.id) {
@@ -106,7 +107,7 @@ app.get('/sessions/callback', function(req, res){
                     othersInvolved += usersIdMap[user.user.id] + ", "; 
                 }
               });
-              othersInvolved = othersInvolved.substring(0,othersInvolved.length-3);
+              othersInvolved = othersInvolved.substring(0,othersInvolved.length-2);
 
               var thisExpense = {};
               if(expense.group_id === null) {
