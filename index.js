@@ -8,10 +8,11 @@ var express = require('express'),
   consumerSecret = "CDSVYWIRYJ24gWWBbdQAMpyf0Yo6dfEKVD247V0C",
   fieldsToConvert = [
     'Description', 'Amount', 'Date', 'Category', 
-    'Group', 'Currency'
+    'Group', 'Friend', 'Currency'
   ],
   thisUser = {},
   readyJson = [],
+  groupsIdMap = {},
   groupsIdMap = {};
 
 function consumer() {
@@ -72,6 +73,19 @@ app.get('/sessions/callback', function(req, res){
         }  
       }); 
 
+            // Get friends for this user
+      consumer().get("https://secure.splitwise.com/api/v3.0/get_friends", req.session.oauthAccessToken, req.session.oauthAccessTokenSecret, function (error, data, response) {
+        if (error) {
+          res.send("Error getting data : " + sys.inspect(error), 500);
+        } else {
+          // res.send(data);
+            friends = JSON.parse(data).groups;
+            friends.forEach(function(friend) {
+              friendsIdMap[friend.id] = friend.first_name + " " + friend.last_name;
+            })
+        }  
+      }); 
+      
       // Get data only for this user and save to readyJson
       consumer().get("https://secure.splitwise.com/api/v3.0/get_expenses?limit=0", req.session.oauthAccessToken, req.session.oauthAccessTokenSecret, function (error, data, response) {
         if (error) {
@@ -96,15 +110,14 @@ app.get('/sessions/callback', function(req, res){
                  }
               });
 
-              // ignore expenses current user is not involved in
-              if (!involved) {
-                return;
-              }
-
               var thisExpense = {};
               if(expense.group_id === null) {
                 expense.group_id = 0;
               }
+              if(expense.friendship_id === null) {
+                expense.friendship_id = 0;
+              }
+              thisExpense.Friend = friendsIdMap[expense.friendship_id]
               thisExpense.Group = groupsIdMap[expense.group_id],
               thisExpense.Description = expense.description,
               thisExpense.Currency = expense.currency_code;
