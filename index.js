@@ -17,7 +17,7 @@ var express = require('express'),
 function consumer() {
   return new oauth.OAuth(
     "https://secure.splitwise.com/api/v3.0/get_request_token", "https://secure.splitwise.com/api/v3.0/get_access_token", 
-    consumerKey, consumerSecret, "1.0", "http://localhost:3000/sessions/callback", "HMAC-SHA1");   
+    consumerKey, consumerSecret, "1.0", "https://splitwise-csv.herokuapp.com/sessions/callback", "HMAC-SHA1");   
 }
 
 app.use(session({
