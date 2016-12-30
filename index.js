@@ -94,7 +94,7 @@ app.get('/sessions/callback', function(req, res){
               users.forEach(function(user){
                  if (!(user.user.id in usersIdMap)){
                     // Get details of this user and add them to the users map
-                    consumer().get("https://secure.splitwise.com/api/v3.0/get_user/:" + user.user.id, req.session.oauthAccessToken, req.session.oauthAccessTokenSecret, function (error, data, response) {
+                    /*consumer().get("https://secure.splitwise.com/api/v3.0/get_user/:" + user.user.id, req.session.oauthAccessToken, req.session.oauthAccessTokenSecret, function (error, data, response) {
                         if (error) {
                            res.send("Error getting data : " + sys.inspect(error), 500);
                         } else {
@@ -102,7 +102,8 @@ app.get('/sessions/callback', function(req, res){
                             u = JSON.parse(data).user;
                             usersIdMap[user.user.id] = u.first_name + u.last_name;
                         }  
-                    }); 
+                    });*/
+                   usersIdMap[user.user.id] = user.user.first_name + user.user.last_name;
                  }
                 
                 
