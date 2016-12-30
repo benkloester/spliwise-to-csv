@@ -96,7 +96,6 @@ app.get('/sessions/callback', function(req, res){
                     usersIdMap[user.user.id] = user.user.first_name + " " + user.user.last_name;
                  }
                 
-                
                  if (thisUser.id === user.user.id) {
                     PaidByMe = user.paid_share;
                     OwedByMe = user.owed_share;
@@ -104,10 +103,10 @@ app.get('/sessions/callback', function(req, res){
                     return;
                  }
                  else {
-                    othersInvolved += usersIdMap[user.user.id] + ", " 
-                 }
-              }
-              othersInvolved = substring(othersInvolved,0,othersInvolved.length-3)
+                    othersInvolved += usersIdMap[user.user.id] + ", "; 
+                }
+              });
+              othersInvolved = substring(othersInvolved,0,othersInvolved.length-3);
 
               var thisExpense = {};
               if(expense.group_id === null) {
@@ -123,7 +122,7 @@ app.get('/sessions/callback', function(req, res){
               thisExpense.Category = expense.category.name;
               thisExpense.Date = expense.date;
               readyJson.push(thisExpense);
-          });
+	  });
 
         json2csv({data: readyJson, fields: fieldsToConvert}, function(err, csv) {
             if (err) console.log(err);
