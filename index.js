@@ -106,7 +106,7 @@ app.get('/sessions/callback', function(req, res){
                     othersInvolved += usersIdMap[user.user.id] + ", "; 
                 }
               });
-              othersInvolved = substring(othersInvolved,0,othersInvolved.length-3);
+              othersInvolved = othersInvolved.substring(0,othersInvolved.length-3);
 
               var thisExpense = {};
               if(expense.group_id === null) {
