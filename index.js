@@ -99,7 +99,7 @@ app.get('/sessions/callback', function(req, res){
                  if (thisUser.id === user.user.id) {
                     PaidByMe = user.paid_share;
                     OwedByMe = user.owed_share;
-                    OwedToMe = user.net_balance
+                    OwedToMe = user.net_balance;
                     return;
                  }
                  else {
