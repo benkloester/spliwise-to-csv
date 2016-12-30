@@ -93,17 +93,7 @@ app.get('/sessions/callback', function(req, res){
               OwedToMe;
               users.forEach(function(user){
                  if (!(user.user.id in usersIdMap)){
-                    // Get details of this user and add them to the users map
-                    /*consumer().get("https://secure.splitwise.com/api/v3.0/get_user/:" + user.user.id, req.session.oauthAccessToken, req.session.oauthAccessTokenSecret, function (error, data, response) {
-                        if (error) {
-                           res.send("Error getting data : " + sys.inspect(error), 500);
-                        } else {
-                            // res.send(data);
-                            u = JSON.parse(data).user;
-                            usersIdMap[user.user.id] = u.first_name + u.last_name;
-                        }  
-                    });*/
-                   usersIdMap[user.user.id] = user.user.first_name + user.user.last_name;
+                    usersIdMap[user.user.id] = user.user.first_name + " " + user.user.last_name;
                  }
                 
                 
@@ -114,9 +104,10 @@ app.get('/sessions/callback', function(req, res){
                     return;
                  }
                  else {
-                    othersInvolved += usersIdMap[user.user.id] + " " 
+                    othersInvolved += usersIdMap[user.user.id] + ", " 
                  }
-              });
+              }
+              othersInvolved = substring(othersInvolved,0,othersInvolved.length-3)
 
               var thisExpense = {};
               if(expense.group_id === null) {
