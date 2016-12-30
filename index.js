@@ -7,7 +7,7 @@ var express = require('express'),
   consumerKey = "XH19fg88X4s6zYXDA0EZGLBW9TxCvlb2auqrMDrw",
   consumerSecret = "CDSVYWIRYJ24gWWBbdQAMpyf0Yo6dfEKVD247V0C",
   fieldsToConvert = [
-    'Description', 'AmountPaid', 'OwedByMe', 'OwedToMe', 'Date', 'Category', 
+    'Description', 'AmountPaid', 'OwedByMe', 'OwedToMe', 'Date', 'Deleted', 'Category', 
     'Group', 'Currency'
   ],
   thisUser = {},
@@ -114,6 +114,7 @@ app.get('/sessions/callback', function(req, res){
               thisExpense.OwedToMe = OwedToMe;
               thisExpense.Category = expense.category.name;
               thisExpense.Date = expense.date;
+              thisExpense.Deleted = expense.deleted_at;
               readyJson.push(thisExpense);
           });
 
