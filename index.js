@@ -7,12 +7,13 @@ var express = require('express'),
   consumerKey = "XH19fg88X4s6zYXDA0EZGLBW9TxCvlb2auqrMDrw",
   consumerSecret = "CDSVYWIRYJ24gWWBbdQAMpyf0Yo6dfEKVD247V0C",
   fieldsToConvert = [
-    'Description', 'AmountPaid', 'OwedByMe', 'OwedToMe', 'Date', 'Category', 
+    'With', 'Description', 'AmountPaid', 'OwedByMe', 'OwedToMe', 'Date', 'Category', 
     'Group', 'Currency'
   ],
   thisUser = {},
   readyJson = [],
-  groupsIdMap = {};
+  groupsIdMap = {},
+  usersIdMap = {};
 
 function consumer() {
   return new oauth.OAuth(
@@ -91,6 +92,20 @@ app.get('/sessions/callback', function(req, res){
               OwedByMe,
               OwedToMe;
               users.forEach(function(user){
+                 if (!(user.user.id in usersIdMap)){
+                    // Get details of this user and add them to the users map
+                    consumer().get("https://secure.splitwise.com/api/v3.0/get_user/:" + user.user.id, req.session.oauthAccessToken, req.session.oauthAccessTokenSecret, function (error, data, response) {
+                        if (error) {
+                           res.send("Error getting data : " + sys.inspect(error), 500);
+                        } else {
+                            // res.send(data);
+                            u = JSON.parse(data).user;
+                            usersIdMap[u.id] = u.first_name + u.last_name;)
+                        }  
+                    }); 
+                 }
+                
+                
                  if (thisUser.id === user.user.id) {
                     PaidByMe = user.paid_share;
                     OwedByMe = user.owed_share;
@@ -98,7 +113,7 @@ app.get('/sessions/callback', function(req, res){
                     return;
                  }
                  else {
-                    othersInvolved += user.user_id 
+                    othersInvolved += usersIdMap[user.user.id] + " " 
                  }
               });
 
@@ -106,6 +121,7 @@ app.get('/sessions/callback', function(req, res){
               if(expense.group_id === null) {
                 expense.group_id = 0;
               }
+              thisExpense.With = othersInvolved,
               thisExpense.Group = groupsIdMap[expense.group_id],
               thisExpense.Description = expense.description,
               thisExpense.Currency = expense.currency_code;
