@@ -7,7 +7,7 @@ var express = require('express'),
   consumerKey = "XH19fg88X4s6zYXDA0EZGLBW9TxCvlb2auqrMDrw",
   consumerSecret = "CDSVYWIRYJ24gWWBbdQAMpyf0Yo6dfEKVD247V0C",
   fieldsToConvert = [
-    'Description', 'AmountPaid', 'AmountOwed', 'Balance', 'Date', 'Category', 
+    'Description', 'AmountPaid', 'OwedByMe', 'OwedToMe', 'Date', 'Category', 
     'Group', 'Currency'
   ],
   thisUser = {},
@@ -87,14 +87,14 @@ app.get('/sessions/callback', function(req, res){
               }
               var users = expense.users,
               othersInvolved = "",
-              ownPortion,
-              othersPortion,
-              myBalance;
+              PaidByMe,
+              OwedByMe,
+              OwedToMe;
               users.forEach(function(user){
                  if (thisUser.id === user.user.id) {
-                    ownPortion = user.paid_share;
-                    othersPortion = user.owed_share;
-                    myBalance = user.net_balance
+                    PaidByMe = user.paid_share;
+                    OwedByMe = user.owed_share;
+                    OwedToMe = user.net_balance
                     return;
                  }
                  else {
@@ -109,9 +109,9 @@ app.get('/sessions/callback', function(req, res){
               thisExpense.Group = groupsIdMap[expense.group_id],
               thisExpense.Description = expense.description,
               thisExpense.Currency = expense.currency_code;
-              thisExpense.AmountPaid = ownPortion;
-              thisExpense.AmountOwed = othersPortion;
-              thisExpense.Balance = myBalance;
+              thisExpense.AmountPaid = PaidByMe;
+              thisExpense.OwedByMe = OwedByMe;
+              thisExpense.OwedToMe = OwedToMe;
               thisExpense.Category = expense.category.name;
               thisExpense.Date = expense.date;
               readyJson.push(thisExpense);
