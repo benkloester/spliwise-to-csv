@@ -7,12 +7,11 @@ var express = require('express'),
   consumerKey = "XH19fg88X4s6zYXDA0EZGLBW9TxCvlb2auqrMDrw",
   consumerSecret = "CDSVYWIRYJ24gWWBbdQAMpyf0Yo6dfEKVD247V0C",
   fieldsToConvert = [
-    'Description', 'Amount', 'Date', 'Category', 
-    'Group', 'Friend', 'Currency'
+    'Description', 'AmountPaid', 'AmountOwed', 'Balance', 'Date', 'Category', 
+    'Group', 'Currency'
   ],
   thisUser = {},
   readyJson = [],
-  groupsIdMap = {},
   groupsIdMap = {};
 
 function consumer() {
@@ -73,19 +72,6 @@ app.get('/sessions/callback', function(req, res){
         }  
       }); 
 
-            // Get friends for this user
-      consumer().get("https://secure.splitwise.com/api/v3.0/get_friends", req.session.oauthAccessToken, req.session.oauthAccessTokenSecret, function (error, data, response) {
-        if (error) {
-          res.send("Error getting data : " + sys.inspect(error), 500);
-        } else {
-          // res.send(data);
-            friends = JSON.parse(data).groups;
-            friends.forEach(function(friend) {
-              friendsIdMap[friend.id] = friend.first_name + " " + friend.last_name;
-            })
-        }  
-      }); 
-      
       // Get data only for this user and save to readyJson
       consumer().get("https://secure.splitwise.com/api/v3.0/get_expenses?limit=0", req.session.oauthAccessToken, req.session.oauthAccessTokenSecret, function (error, data, response) {
         if (error) {
@@ -100,13 +86,19 @@ app.get('/sessions/callback', function(req, res){
                   return;
               }
               var users = expense.users,
-              involved = false,
-              userExpense;
+              othersInvolved = "",
+              ownPortion,
+              othersPortion,
+              myBalance;
               users.forEach(function(user){
                  if (thisUser.id === user.user.id) {
-                    involved = true;
-                    userExpense = user;
+                    ownPortion = user.paid_share;
+                    othersPortion = user.owed_share;
+                    myBalance = user.net_balance
                     return;
+                 }
+                 else {
+                    othersInvolved += user.user_id 
                  }
               });
 
@@ -114,14 +106,12 @@ app.get('/sessions/callback', function(req, res){
               if(expense.group_id === null) {
                 expense.group_id = 0;
               }
-              if(expense.friendship_id === null) {
-                expense.friendship_id = 0;
-              }
-              thisExpense.Friend = friendsIdMap[expense.friendship_id]
               thisExpense.Group = groupsIdMap[expense.group_id],
               thisExpense.Description = expense.description,
               thisExpense.Currency = expense.currency_code;
-              thisExpense.Amount = userExpense.owed_share;
+              thisExpense.AmountPaid = ownPortion;
+              thisExpense.AmountOwed = othersPortion;
+              thisExpense.Balance = myBalance;
               thisExpense.Category = expense.category.name;
               thisExpense.Date = expense.date;
               readyJson.push(thisExpense);
@@ -143,3 +133,4 @@ app.get('/sessions/callback', function(req, res){
 app.listen(process.env.PORT || 3000, function(){
   console.log("Express server listening on port %d in %s mode", this.address().port, app.settings.env);
 });
+
