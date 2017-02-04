@@ -7,7 +7,7 @@ var express = require('express'),
   consumerKey = "XH19fg88X4s6zYXDA0EZGLBW9TxCvlb2auqrMDrw",
   consumerSecret = "CDSVYWIRYJ24gWWBbdQAMpyf0Yo6dfEKVD247V0C",
   fieldsToConvert = [
-    'With', 'Description', 'AmountPaid', 'OwedByMe', 'OwedToMe', 'Date', 'Category', 
+    'Description', 'AmountPaid', 'OwedByMe', 'OwedToMe', 'Date', 'Category', 
     'Group', 'Currency'
   ],
   thisUser = {},
@@ -113,15 +113,14 @@ app.get('/sessions/callback', function(req, res){
               if(expense.group_id === null) {
                 expense.group_id = 0;
               }
-              thisExpense.With = othersInvolved,
               thisExpense.Group = groupsIdMap[expense.group_id],
-              thisExpense.Description = expense.description,
+              thisExpense.Description = expense.description + " with " + othersInvolved,
               thisExpense.Currency = expense.currency_code;
               thisExpense.AmountPaid = PaidByMe;
               thisExpense.OwedByMe = OwedByMe;
               thisExpense.OwedToMe = OwedToMe;
               thisExpense.Category = expense.category.name;
-              thisExpense.Date = expense.date;
+              thisExpense.Date = expense.date.substring(0,10);
               readyJson.push(thisExpense);
 	  });
 
